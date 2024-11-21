@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoliAcciones</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Usuario</h1>
+        <form id="registerForm">
+            <input type="text" id="nombreUsuario" placeholder="Nombre del Usuario" required>
+            <button type="submit">Registrar</button>
+        </form>
+
+        <h1>Compra de Acciones</h1>
+        <div id="compraAcciones">
+            <form id="compraForm">
+                <input type="text" id="simboloAccion" placeholder="Símbolo de la Acción" required>
+                <input type="date" id="fechaAccionInput" required>
+                <button type="button" id="buscarAccion">Buscar</button>
+                <div id="infoAccion">
+                    <p><strong>Precio:</strong> <span id="precioAccion">-</span></p>
+                    <p><strong>Fecha:</strong> <span id="fechaAccion">-</span></p>
+                </div>
+                <input type="number" id="cantidadAccion" placeholder="Cantidad" required>
+                <button type="submit">Comprar</button>
+            </form>
+            <button type="button" id="refrescarCampos">Refrescar</button>
+        </div>
+
+        <h2>Acciones Compradas</h2>
+        <table id="tablaAcciones">
+            <thead>
+                <tr>
+                    <th>Nombre de la Acción</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las acciones se mostrarán aquí -->
+            </tbody>
+        </table>
+        <button type="button" id="reiniciarApp">Reiniciar</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
