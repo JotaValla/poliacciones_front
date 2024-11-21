@@ -1,8 +1,7 @@
-const API_BASE = "http://localhost:8080"; // Cambia si usas otro puerto
-
-// Obtener los datos de la acción desde la URL
+const API_BASE = "http://localhost:8080";
 const params = new URLSearchParams(window.location.search);
 const accionId = params.get("accionId");
+const usuarioId = params.get("usuarioId");
 
 // Referencias a los elementos HTML
 const detalleCantidad = document.getElementById("detalleCantidad");
@@ -10,69 +9,120 @@ const detalleFecha = document.getElementById("detalleFecha");
 const detalleValor = document.getElementById("detalleValor");
 const detalleNombre = document.getElementById("detalleNombre");
 
-const ganancia = document.getElementById("ganancia");
-const perdida = document.getElementById("perdida");
-const fechaActual = document.getElementById("fechaActual");
-const valorActual = document.getElementById("valorActual");
+const tablaVentas = document
+  .getElementById("tablaVentas")
+  .querySelector("tbody");
 
-const cantidadVenderInput = document.getElementById("cantidadVender");
-
-// Cargar los detalles de la acción
 async function cargarDetalleAccion() {
-    try {
-        const response = await axios.get(`${API_BASE}/acciones/${accionId}`);
-        const accion = response.data;
+  try {
+    const response = await axios.get(`${API_BASE}/acciones/${accionId}`);
+    const accion = response.data;
 
-        detalleCantidad.textContent = accion.cantidad;
-        detalleFecha.textContent = accion.fecha;
-        detalleValor.textContent = accion.precio.toFixed(2);
-        detalleNombre.textContent = accion.nombreAccion;
-    } catch (error) {
-        console.error("Error al cargar los detalles de la acción:", error);
-        alert("Error al cargar los detalles. Intenta de nuevo más tarde.");
+    detalleCantidad.textContent = accion.cantidad;
+    detalleFecha.textContent = accion.fecha;
+    detalleValor.textContent = accion.precio.toFixed(2);
+    detalleNombre.textContent = accion.nombreAccion;
+
+    if (accion.cantidad === 0) {
+      document.getElementById("venderForm").style.display = "none";
     }
+
+    cargarHistorialVentas(accionId); // Cargar historial de ventas
+  } catch (error) {
+    console.error(error);
+    alert("Error al cargar los detalles de la acción.");
+  }
 }
 
-// Ver ganancia/pérdida
+async function cargarHistorialVentas() {
+  try {
+    const response = await axios.get(`${API_BASE}/ventas/${accionId}`);
+    const ventas = response.data;
+
+    const tbody = tablaVentas;
+    tbody.innerHTML = ""; // Limpiar tabla
+
+    if (ventas.length === 0) {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `<td colspan="3">No hay ventas registradas.</td>`;
+      tbody.appendChild(fila);
+      return;
+    }
+
+    ventas.forEach((venta) => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+                <td>${venta.cantidad}</td>
+                <td>${venta.precio.toFixed(2)}</td>
+                <td>${venta.fechaVenta}</td>
+            `;
+      tbody.appendChild(fila);
+    });
+  } catch (error) {
+    console.error("Error al cargar el historial de ventas:", error);
+    alert("Error al cargar el historial de ventas.");
+  }
+}
+
+// Llamar a cargarHistorialVentas al cargar la página
+cargarHistorialVentas();
+
 document.getElementById("verGanancia").addEventListener("click", async () => {
-    try {
-        const response = await axios.get(`${API_BASE}/acciones/ver-ganancia/${accionId}`);
-        const data = response.data;
+  try {
+    const response = await axios.get(
+      `${API_BASE}/acciones/ver-ganancia/${accionId}`
+    );
+    const data = response.data;
 
-        ganancia.textContent = data.ganancia.toFixed(2);
-        perdida.textContent = data.perdida.toFixed(2);
-        fechaActual.textContent = data.fechaActual;
-        valorActual.textContent = data.valorActual.toFixed(2);
-    } catch (error) {
-        console.error("Error al calcular ganancia/pérdida:", error);
-        alert("Error al calcular ganancia/pérdida. Intenta de nuevo más tarde.");
-    }
+    document.getElementById("ganancia").textContent = data.ganancia
+      ? data.ganancia.toFixed(2)
+      : "-";
+    document.getElementById("perdida").textContent = data.perdida
+      ? data.perdida.toFixed(2)
+      : "-";
+    document.getElementById("fechaActual").textContent = data.fechaActual;
+    document.getElementById("valorActual").textContent =
+      data.valorActual.toFixed(2);
+  } catch (error) {
+    console.error(error);
+    alert("Error al calcular ganancia/pérdida.");
+  }
 });
 
-
-// Vender acción
 document.getElementById("venderForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const cantidadVender = parseInt(cantidadVenderInput.value);
+  e.preventDefault();
 
-    if (!cantidadVender || cantidadVender <= 0) {
-        alert("Por favor, ingresa una cantidad válida.");
-        return;
-    }
+  const cantidadVender = parseInt(
+    document.getElementById("cantidadVender").value
+  );
 
-    try {
-        const response = await axios.post(`${API_BASE}/acciones/vender`, {
-            accionId,
-            cantidad: cantidadVender,
-        });
+  if (!cantidadVender || cantidadVender <= 0) {
+    alert("La cantidad debe ser positiva.");
+    return;
+  }
 
-        alert("Acción vendida con éxito.");
-        cargarDetalleAccion(); // Actualizar los detalles
-    } catch (error) {
-        console.error("Error al vender la acción:", error);
-        alert("Error al vender la acción. Intenta de nuevo más tarde.");
-    }
+  if (cantidadVender > parseInt(detalleCantidad.textContent)) {
+    alert("No puedes vender más de la cantidad disponible.");
+    return;
+  }
+
+  try {
+    await axios.post(`${API_BASE}/ventas`, {
+      accion: {
+        idAccion: parseInt(accionId), // Convertir a número
+      },
+      cantidad: cantidadVender,
+    });
+    alert("Acción vendida con éxito.");
+    cargarDetalleAccion(); // Actualizar los detalles
+  } catch (error) {
+    console.error(error);
+    alert("Error al vender la acción.");
+  }
 });
 
-// Inicializar la página
+document.getElementById("btnRegresar").addEventListener("click", () => {
+  window.location.href = `index.html?usuarioId=${usuarioId}`;
+});
+
 cargarDetalleAccion();
