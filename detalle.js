@@ -52,10 +52,12 @@ async function cargarHistorialVentas() {
     ventas.forEach((venta) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
-                <td>${venta.cantidad}</td>
-                <td>${venta.precio.toFixed(2)}</td>
-                <td>${venta.fechaVenta}</td>
-            `;
+          <td>${venta.cantidad}</td>
+          <td>${venta.precioVenta.toFixed(2)}</td>
+          <td>${venta.fechaVenta}</td>
+          <td>${venta.ganancia ? venta.ganancia.toFixed(2) : "-"}</td>
+          <td>${venta.perdida ? venta.perdida.toFixed(2) : "-"}</td>
+      `;
       tbody.appendChild(fila);
     });
   } catch (error) {
@@ -114,6 +116,8 @@ document.getElementById("venderForm").addEventListener("submit", async (e) => {
       cantidad: cantidadVender,
     });
     alert("Acción vendida con éxito.");
+    await cargarDetalleAccion(); // Refresca los detalles
+    await cargarHistorialVentas(); // Actualiza el historial de ventas
     cargarDetalleAccion(); // Actualizar los detalles
   } catch (error) {
     console.error(error);
