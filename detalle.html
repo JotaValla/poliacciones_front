@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detalle de Acción</title>
+    <title>Detalles de la Acción Registrada</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -12,7 +12,7 @@
       <div id="detalleAccion">
         <p><strong>Cantidad:</strong> <span id="detalleCantidad">-</span></p>
         <p><strong>Fecha:</strong> <span id="detalleFecha">-</span></p>
-        <p><strong>Valor:</strong> <span id="detalleValor">-</span></p>
+        <p><strong>Valor Unitario:</strong> <span id="detalleValor">-</span></p>
         <p>
           <strong>Nombre de la Acción:</strong>
           <span id="detalleNombre">-</span>
@@ -22,40 +22,11 @@
       <h2>Ver Ganancia/Pérdida</h2>
       <button type="button" id="verGanancia">Ver Ganancia</button>
       <div id="gananciaInfo">
-        <p><strong>Ganancia:</strong> <span id="ganancia">-</span></p>
-        <p><strong>Pérdida:</strong> <span id="perdida">-</span></p>
+        <p><strong>Ganancia Total:</strong> <span id="ganancia">-</span></p>
+        <p><strong>Pérdida Total:</strong> <span id="perdida">-</span></p>
         <p><strong>Fecha Actual:</strong> <span id="fechaActual">-</span></p>
         <p><strong>Valor Actual:</strong> <span id="valorActual">-</span></p>
       </div>
-
-      <h2>Vender Acción</h2>
-      <form id="venderForm">
-        <label for="cantidadVender">Ingrese la cantidad a vender:</label>
-        <input
-          type="number"
-          id="cantidadVender"
-          placeholder="Cantidad"
-          required
-          min="1"
-        />
-        <button type="submit">Vender</button>
-      </form>
-
-      <h2>Historial de Ventas</h2>
-      <table id="tablaVentas">
-        <thead>
-          <tr>
-            <th>Cantidad Vendida</th>
-            <th>Precio Venta</th>
-            <th>Fecha Venta</th>
-            <th>Ganancia</th>
-            <th>Pérdida</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Las ventas se mostrarán aquí -->
-        </tbody>
-      </table>
 
       <button type="button" id="btnRegresar">Regresar</button>
     </div>

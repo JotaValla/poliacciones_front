@@ -15,51 +15,56 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("fechaAccionInput").setAttribute("max", hoy);
 });
 
-document
-  .getElementById("registerForm")
-  .addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nombre = document.getElementById("nombreUsuario").value;
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById("nombreUsuario").value;
 
-    try {
-      const response = await axios.post(`${API_BASE}/usuarios`, { nombre });
-      usuarioLogueado = response.data.idUsuario;
-      alert(`Usuario registrado con ID: ${usuarioLogueado}`);
-      document.getElementById("registerForm").style.display = "none";
-      actualizarTabla(usuarioLogueado);
-    } catch (error) {
-      console.error(error);
-      alert("Error al registrar el usuario");
-    }
-  });
+  try {
+    const response = await axios.post(`${API_BASE}/usuarios`, { nombre });
+    usuarioLogueado = response.data.idUsuario;
+    showModal("Usuario registrado con éxito."); // Usar ventana modal
+    document.getElementById("registerForm").style.display = "none";
+    actualizarTabla(usuarioLogueado);
+  } catch (error) {
+    console.error(error);
+    showModal("Error al registrar el usuario."); // Usar ventana modal
+  }
+});
 
-  document.getElementById("buscarAccion").addEventListener("click", async () => {
-    const simbolo = document.getElementById("simboloAccion").value.trim().toUpperCase();
-    const fecha = document.getElementById("fechaAccionInput").value;
-  
-    if (!fecha) {
-        alert("Por favor, selecciona una fecha.");
-        return;
-    }
-  
-    try {
-        const response = await axios.get(`${API_BASE}/acciones/buscar`, { params: { simbolo, fecha } });
-        document.getElementById("precioAccion").textContent = response.data.precio.toFixed(2);
-        document.getElementById("fechaAccion").textContent = response.data.fecha;
-    } catch (error) {
-        console.error(error);
-        alert("No se pudo obtener el precio de la acción. Por favor, verifica el símbolo o intenta más tarde.");
-        document.getElementById("precioAccion").textContent = "-";
-        document.getElementById("fechaAccion").textContent = "-";
-    }
-  });
-  
+document.getElementById("buscarAccion").addEventListener("click", async () => {
+  const simbolo = document
+    .getElementById("simboloAccion")
+    .value.trim()
+    .toUpperCase();
+  const fecha = document.getElementById("fechaAccionInput").value;
+
+  if (!fecha) {
+    alert("Por favor, selecciona una fecha.");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE}/acciones/buscar`, {
+      params: { simbolo, fecha },
+    });
+    document.getElementById("precioAccion").textContent =
+      response.data.precio.toFixed(2);
+    document.getElementById("fechaAccion").textContent = response.data.fecha;
+  } catch (error) {
+    console.error(error);
+    alert(
+      "No se pudo obtener el precio de la acción. Por favor, verifica el símbolo o intenta más tarde."
+    );
+    document.getElementById("precioAccion").textContent = "-";
+    document.getElementById("fechaAccion").textContent = "-";
+  }
+});
 
 document.getElementById("compraForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (!usuarioLogueado) {
-    alert("Debes registrar un usuario primero.");
+    showModal("Debes registrar un usuario primero."); // Usar ventana modal
     return;
   }
 
@@ -68,7 +73,7 @@ document.getElementById("compraForm").addEventListener("submit", async (e) => {
   const fecha = document.getElementById("fechaAccionInput").value;
 
   if (cantidad <= 0) {
-    alert("La cantidad debe ser un número positivo.");
+    showModal("La cantidad debe ser un número positivo."); // Usar ventana modal
     return;
   }
 
@@ -79,11 +84,11 @@ document.getElementById("compraForm").addEventListener("submit", async (e) => {
       fecha,
       usuario: { idUsuario: usuarioLogueado },
     });
-    alert("Compra realizada con éxito.");
+    showModal("Acción registrada con éxito."); // Usar ventana modal
     actualizarTabla(usuarioLogueado);
   } catch (error) {
     console.error(error);
-    alert("Error al realizar la compra.");
+    showModal("Error al registrar la acción."); // Usar ventana modal
   }
 });
 
@@ -119,17 +124,23 @@ async function actualizarTabla(usuarioId) {
   }
 }
 
-document.getElementById("refrescarCampos").addEventListener("click", () => {
-  document.getElementById("simboloAccion").value = "";
-  document.getElementById("fechaAccionInput").value = "";
-  document.getElementById("cantidadAccion").value = "";
-  document.getElementById("precioAccion").textContent = "-";
-  document.getElementById("fechaAccion").textContent = "-";
-});
-
 document.getElementById("reiniciarApp").addEventListener("click", () => {
   usuarioLogueado = null;
   document.getElementById("registerForm").style.display = "block";
   document.getElementById("tablaAcciones").querySelector("tbody").innerHTML =
     "";
 });
+
+// Función para mostrar la ventana modal con un mensaje
+function showModal(message) {
+  const modal = document.getElementById("notificationModal");
+  const modalMessage = document.getElementById("modalMessage");
+
+  modalMessage.textContent = message;
+  modal.classList.remove("hidden");
+
+  // Ocultar modal al hacer clic en "Aceptar"
+  document.getElementById("closeModal").addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+}

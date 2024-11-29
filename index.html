@@ -19,7 +19,7 @@
         <button type="submit">Registrar</button>
       </form>
 
-      <h1>Compra de Acciones</h1>
+      <h1>Registro de compra de acciones</h1>
       <div id="compraAcciones">
         <form id="compraForm">
           <input
@@ -41,18 +41,17 @@
             required
             min="1"
           />
-          <button type="submit">Comprar</button>
+          <button type="submit">Registrar</button>
         </form>
-        <button type="button" id="refrescarCampos">Refrescar</button>
       </div>
 
-      <h2>Acciones Compradas</h2>
+      <h2>Registro de Acciones Compradas</h2>
       <table id="tablaAcciones">
         <thead>
           <tr>
             <th>Nombre de la Acción</th>
             <th>Cantidad</th>
-            <th>Precio</th>
+            <th>Precio Unitario</th>
             <th>Fecha</th>
           </tr>
         </thead>
@@ -61,6 +60,12 @@
         </tbody>
       </table>
       <button type="button" id="reiniciarApp">Reiniciar</button>
+    </div>
+    <div id="notificationModal" class="modal hidden">
+      <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button id="closeModal">Aceptar</button>
+      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
