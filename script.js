@@ -31,66 +31,46 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
   }
 });
 
-document.getElementById("buscarAccion").addEventListener("click", async () => {
-  const simbolo = document
-    .getElementById("simboloAccion")
-    .value.trim()
-    .toUpperCase();
-  const fecha = document.getElementById("fechaAccionInput").value;
-
-  if (!fecha) {
-    alert("Por favor, selecciona una fecha.");
-    return;
-  }
-
-  try {
-    const response = await axios.get(`${API_BASE}/acciones/buscar`, {
-      params: { simbolo, fecha },
-    });
-    document.getElementById("precioAccion").textContent =
-      response.data.precio.toFixed(2);
-    document.getElementById("fechaAccion").textContent = response.data.fecha;
-  } catch (error) {
-    console.error(error);
-    alert(
-      "No se pudo obtener el precio de la acción. Por favor, verifica el símbolo o intenta más tarde."
-    );
-    document.getElementById("precioAccion").textContent = "-";
-    document.getElementById("fechaAccion").textContent = "-";
-  }
-});
 
 document.getElementById("compraForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (!usuarioLogueado) {
-    showModal("Debes registrar un usuario primero."); // Usar ventana modal
+    showModal("Debes registrar un usuario primero.");
     return;
   }
 
-  const simbolo = document.getElementById("simboloAccion").value;
+  const simbolo = document.getElementById("simboloAccion").value.trim();
   const cantidad = parseInt(document.getElementById("cantidadAccion").value);
   const fecha = document.getElementById("fechaAccionInput").value;
+  const precio = parseFloat(document.getElementById("precioAccionInput").value);
 
   if (cantidad <= 0) {
-    showModal("La cantidad debe ser un número positivo."); // Usar ventana modal
+    showModal("La cantidad debe ser un número positivo.");
+    return;
+  }
+
+  if (precio <= 0) {
+    showModal("El precio debe ser mayor a 0.");
     return;
   }
 
   try {
     await axios.post(`${API_BASE}/acciones/comprar`, {
       nombreAccion: simbolo,
-      cantidad,
-      fecha,
+      cantidad: cantidad,
+      precio: precio,
+      fecha: fecha,
       usuario: { idUsuario: usuarioLogueado },
     });
-    showModal("Acción registrada con éxito."); // Usar ventana modal
+    showModal("Acción registrada con éxito.");
     actualizarTabla(usuarioLogueado);
   } catch (error) {
     console.error(error);
-    showModal("Error al registrar la acción."); // Usar ventana modal
+    showModal("Error al registrar la acción.");
   }
 });
+
 
 async function actualizarTabla(usuarioId) {
   try {
@@ -104,14 +84,18 @@ async function actualizarTabla(usuarioId) {
 
     response.data.forEach((accion) => {
       if (accion.cantidad > 0) {
-        // Solo mostrar acciones con cantidad > 0
+        // Calcular el precio total
+        const precioTotal = (accion.cantidad * accion.precio).toFixed(2);
+
+        // Crear fila con la nueva columna
         const fila = document.createElement("tr");
         fila.innerHTML = `
-                  <td>${accion.nombreAccion}</td>
-                  <td>${accion.cantidad}</td>
-                  <td>${accion.precio.toFixed(2)}</td>
-                  <td>${accion.fecha}</td>
-              `;
+          <td>${accion.nombreAccion}</td>
+          <td>${accion.cantidad}</td>
+          <td>${accion.precio.toFixed(2)}</td>
+          <td>${precioTotal}</td>
+          <td>${accion.fecha}</td>
+        `;
         fila.addEventListener("click", () => {
           window.location.href = `detalle.html?accionId=${accion.idAccion}&usuarioId=${usuarioId}`;
         });
@@ -123,6 +107,7 @@ async function actualizarTabla(usuarioId) {
     alert("Error al cargar las acciones.");
   }
 }
+
 
 document.getElementById("reiniciarApp").addEventListener("click", () => {
   usuarioLogueado = null;

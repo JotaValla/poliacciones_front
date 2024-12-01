@@ -13,6 +13,7 @@
         <p><strong>Cantidad:</strong> <span id="detalleCantidad">-</span></p>
         <p><strong>Fecha:</strong> <span id="detalleFecha">-</span></p>
         <p><strong>Valor Unitario:</strong> <span id="detalleValor">-</span></p>
+        <p><strong>Valor Total:</strong> <span id="detalleValorTotal">-</span></p>
         <p>
           <strong>Nombre de la Acción:</strong>
           <span id="detalleNombre">-</span>
@@ -22,10 +23,28 @@
       <h2>Ver Ganancia/Pérdida</h2>
       <button type="button" id="verGanancia">Ver Ganancia</button>
       <div id="gananciaInfo">
-        <p><strong>Ganancia Total:</strong> <span id="ganancia">-</span></p>
-        <p><strong>Pérdida Total:</strong> <span id="perdida">-</span></p>
-        <p><strong>Fecha Actual:</strong> <span id="fechaActual">-</span></p>
-        <p><strong>Valor Actual:</strong> <span id="valorActual">-</span></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Ganancia Total</th>
+              <th>Pérdida Total</th>
+              <th>Fecha Actual</th>
+              <th>Valor Actual</th>
+              <th>Porcentaje de Ganancia</th>
+              <th>Porcentaje de Pérdida</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="ganancia">-</td>
+              <td id="perdida">-</td>
+              <td id="fechaActual">-</td>
+              <td id="valorActual">-</td>
+              <td id="porcentajeGanancia">-</td>
+              <td id="porcentajePerdida">-</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <button type="button" id="btnRegresar">Regresar</button>

@@ -29,11 +29,14 @@
             required
           />
           <input type="date" id="fechaAccionInput" required />
-          <button type="button" id="buscarAccion">Buscar</button>
-          <div id="infoAccion">
-            <p><strong>Precio:</strong> <span id="precioAccion">-</span></p>
-            <p><strong>Fecha:</strong> <span id="fechaAccion">-</span></p>
-          </div>
+          <input
+            type="number"
+            id="precioAccionInput"
+            placeholder="Precio"
+            required
+            step="0.01"
+            min="0.01"
+          />
           <input
             type="number"
             id="cantidadAccion"
@@ -41,8 +44,8 @@
             required
             min="1"
           />
-          <button type="submit">Registrar</button>
-        </form>
+          <button type="submit">Registrar accion</button>
+        </form>        
       </div>
 
       <h2>Registro de Acciones Compradas</h2>
@@ -52,6 +55,7 @@
             <th>Nombre de la Acción</th>
             <th>Cantidad</th>
             <th>Precio Unitario</th>
+            <th>Precio Total</th>
             <th>Fecha</th>
           </tr>
         </thead>
