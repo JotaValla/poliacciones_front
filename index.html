@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PoliAcciones</title>
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   </head>
   <body>
     <div class="container">
@@ -28,7 +33,14 @@
             placeholder="Símbolo de la Acción"
             required
           />
-          <input type="date" id="fechaAccionInput" required />
+          <input
+            type="date"
+            id="fechaAccionInput"
+            required
+            onkeydown="return false"
+            min=""
+            max=""
+          />
           <input
             type="number"
             id="precioAccionInput"
@@ -44,8 +56,8 @@
             required
             min="1"
           />
-          <button type="submit">Registrar accion</button>
-        </form>        
+          <button type="submit">Registrar acción</button>
+        </form>
       </div>
 
       <h2>Registro de Acciones Compradas</h2>
