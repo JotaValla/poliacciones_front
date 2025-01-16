@@ -7,126 +7,84 @@ const usuarioId = params.get("usuarioId");
 const detalleCantidad = document.getElementById("detalleCantidad");
 const detalleFecha = document.getElementById("detalleFecha");
 const detalleValor = document.getElementById("detalleValor");
+const detalleValorTotal = document.getElementById("detalleValorTotal");
 const detalleNombre = document.getElementById("detalleNombre");
-
-const tablaVentas = document
-  .getElementById("tablaVentas")
-  .querySelector("tbody");
+const ganancia = document.getElementById("ganancia");
+const perdida = document.getElementById("perdida");
+const fechaActual = document.getElementById("fechaActual");
+const valorActual = document.getElementById("valorActual");
+const porcentajeGanancia = document.getElementById("porcentajeGanancia");
+const porcentajePerdida = document.getElementById("porcentajePerdida");
 
 async function cargarDetalleAccion() {
   try {
+    // Obtener detalles de la acción
     const response = await axios.get(`${API_BASE}/acciones/${accionId}`);
     const accion = response.data;
 
+    // Setear los valores básicos
     detalleCantidad.textContent = accion.cantidad;
     detalleFecha.textContent = accion.fecha;
     detalleValor.textContent = accion.precio.toFixed(2);
     detalleNombre.textContent = accion.nombreAccion;
 
-    if (accion.cantidad === 0) {
-      document.getElementById("venderForm").style.display = "none";
-    }
+    // Calcular y mostrar el valor total
+    const valorTotal = (accion.cantidad * accion.precio).toFixed(2);
+    detalleValorTotal.textContent = valorTotal;
 
-    cargarHistorialVentas(accionId); // Cargar historial de ventas
   } catch (error) {
     console.error(error);
     alert("Error al cargar los detalles de la acción.");
   }
 }
 
-async function cargarHistorialVentas() {
-  try {
-    const response = await axios.get(`${API_BASE}/ventas/${accionId}`);
-    const ventas = response.data;
-
-    const tbody = tablaVentas;
-    tbody.innerHTML = ""; // Limpiar tabla
-
-    if (ventas.length === 0) {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `<td colspan="3">No hay ventas registradas.</td>`;
-      tbody.appendChild(fila);
-      return;
-    }
-
-    ventas.forEach((venta) => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-          <td>${venta.cantidad}</td>
-          <td>${venta.precioVenta.toFixed(2)}</td>
-          <td>${venta.fechaVenta}</td>
-          <td>${venta.ganancia ? venta.ganancia.toFixed(2) : "-"}</td>
-          <td>${venta.perdida ? venta.perdida.toFixed(2) : "-"}</td>
-      `;
-      tbody.appendChild(fila);
-    });
-  } catch (error) {
-    console.error("Error al cargar el historial de ventas:", error);
-    alert("Error al cargar el historial de ventas.");
-  }
-}
-
-// Llamar a cargarHistorialVentas al cargar la página
-cargarHistorialVentas();
-
 document.getElementById("verGanancia").addEventListener("click", async () => {
   try {
-    const response = await axios.get(
-      `${API_BASE}/acciones/ver-ganancia/${accionId}`
-    );
+    // Obtener información de ganancia/pérdida
+    const response = await axios.get(`${API_BASE}/acciones/ver-ganancia/${accionId}`);
     const data = response.data;
 
-    document.getElementById("ganancia").textContent = data.ganancia
-      ? data.ganancia.toFixed(2)
-      : "-";
-    document.getElementById("perdida").textContent = data.perdida
-      ? data.perdida.toFixed(2)
-      : "-";
-    document.getElementById("fechaActual").textContent = data.fechaActual;
-    document.getElementById("valorActual").textContent =
-      data.valorActual.toFixed(2);
+    // Setear datos de ganancia/pérdida
+    const cantidad = parseInt(detalleCantidad.textContent); // Obtener la cantidad de acciones
+    const valorTotal = parseFloat(detalleValorTotal.textContent); // Valor total inicial
+
+    // Calcular ganancia total y pérdida total
+    const valorActualTotal = cantidad * data.valorActual; // Valor actual total de todas las acciones
+    const gananciaTotal = Math.max(valorActualTotal - valorTotal, 0).toFixed(2); // Ganancia total
+    const perdidaTotal = Math.max(valorTotal - valorActualTotal, 0).toFixed(2); // Pérdida total
+
+    // Mostrar ganancia/pérdida total
+    ganancia.textContent = gananciaTotal;
+    perdida.textContent = perdidaTotal;
+
+    // Mostrar fecha y valor actual
+    fechaActual.textContent = data.fechaActual;
+    valorActual.textContent = data.valorActual.toFixed(2);
+
+    // Calcular porcentajes
+    const porcentajeGananciaValue =
+      gananciaTotal > 0
+        ? ((gananciaTotal / valorTotal) * 100).toFixed(2)
+        : 0;
+    const porcentajePerdidaValue =
+      perdidaTotal > 0
+        ? ((perdidaTotal / valorTotal) * 100).toFixed(2)
+        : 0;
+
+    // Mostrar porcentajes
+    porcentajeGanancia.textContent = `${porcentajeGananciaValue}%`;
+    porcentajePerdida.textContent = `${porcentajePerdidaValue}%`;
+
   } catch (error) {
     console.error(error);
     alert("Error al calcular ganancia/pérdida.");
   }
 });
 
-document.getElementById("venderForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const cantidadVender = parseInt(
-    document.getElementById("cantidadVender").value
-  );
-
-  if (!cantidadVender || cantidadVender <= 0) {
-    alert("La cantidad debe ser positiva.");
-    return;
-  }
-
-  if (cantidadVender > parseInt(detalleCantidad.textContent)) {
-    alert("No puedes vender más de la cantidad disponible.");
-    return;
-  }
-
-  try {
-    await axios.post(`${API_BASE}/ventas`, {
-      accion: {
-        idAccion: parseInt(accionId), // Convertir a número
-      },
-      cantidad: cantidadVender,
-    });
-    alert("Acción vendida con éxito.");
-    await cargarDetalleAccion(); // Refresca los detalles
-    await cargarHistorialVentas(); // Actualiza el historial de ventas
-    cargarDetalleAccion(); // Actualizar los detalles
-  } catch (error) {
-    console.error(error);
-    alert("Error al vender la acción.");
-  }
-});
-
+// Regresar a la página principal
 document.getElementById("btnRegresar").addEventListener("click", () => {
   window.location.href = `index.html?usuarioId=${usuarioId}`;
 });
 
+// Cargar detalles de la acción al cargar la página
 cargarDetalleAccion();
