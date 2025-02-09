@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Acciones - PoliAcciones</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Registro de compra de acciones</h1>
+      <form id="compraForm">
+        <div class="form-container">
+          <input
+            type="text"
+            id="simboloAccion"
+            placeholder="Símbolo de la Acción"
+            required
+          />
+          <input
+            type="date"
+            id="fechaAccionInput"
+            placeholder="Fecha de la compra"
+            onkeydown="return false"
+          />
+
+          <input
+            type="number"
+            id="precioAccionInput"
+            placeholder="Precio"
+            required
+            step="0.01"
+            min="0.01"
+          />
+          <input
+            type="number"
+            id="cantidadAccion"
+            placeholder="Cantidad"
+            required
+            min="1"
+          />
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit">Registrar acción</button>
+          <button type="button" id="limpiarCampos">Limpiar Campos</button>
+        </div>
+      </form>
+
+      <h2>Registro de Acciones Compradas</h2>
+      <button id="ordenarAcciones" type="button">Ordenar por Nombre</button>
+      <table id="tablaAcciones">
+        <thead>
+          <tr>
+            <th>Nombre de la Acción</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Precio Total</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Las acciones se mostrarán aquí -->
+        </tbody>
+      </table>
+
+      <h2>Consolidado de Acciones</h2>
+      <table id="tablaConsolidados">
+        <thead>
+          <tr>
+            <th>Acción</th>
+            <th>Cantidad Total</th>
+            <th>Valor USD</th>
+            <th>Precio de Costo</th>
+            <th>% Ganancia/Pérdida</th>
+            <th>$ Ganancia/Pérdida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los consolidados se mostrarán aquí -->
+        </tbody>
+      </table>
+
+      <div id="paginacion" class="paginacion-container"></div>
+      <button type="button" id="cerrarSesion">Cerrar Sesión</button>
+    </div>
+    <div id="notificationModal" class="modal hidden">
+      <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button id="closeModal">Aceptar</button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="registroAcciones.js"></script>
+  </body>
+</html>

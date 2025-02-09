@@ -3,6 +3,19 @@ const params = new URLSearchParams(window.location.search);
 const accionId = params.get("accionId");
 const usuarioId = params.get("usuarioId");
 
+const token = localStorage.getItem("token");
+const usuarioCedula = localStorage.getItem("usuarioCedula");
+
+console.log("Datos en detalle.js:", { token, usuarioCedula }); // Para depuración
+
+// Verifica que el token y la cédula del usuario estén presentes
+if (!token || !usuarioCedula) {
+  alert("Debes iniciar sesión primero.");
+  window.location.href = "index.html";
+}
+
+const headers = { Authorization: `Bearer ${token}` };
+
 // Referencias a los elementos HTML
 const detalleCantidad = document.getElementById("detalleCantidad");
 const detalleFecha = document.getElementById("detalleFecha");
@@ -18,8 +31,8 @@ const porcentajePerdida = document.getElementById("porcentajePerdida");
 
 async function cargarDetalleAccion() {
   try {
-    // Obtener detalles de la acción
-    const response = await axios.get(`${API_BASE}/acciones/${accionId}`);
+    // Obtener detalles de la acción con el token y cedula en los headers
+    const response = await axios.get(`${API_BASE}/acciones/${accionId}`, { headers });
     const accion = response.data;
 
     // Setear los valores básicos
@@ -41,7 +54,7 @@ async function cargarDetalleAccion() {
 document.getElementById("verGanancia").addEventListener("click", async () => {
   try {
     // Obtener información de ganancia/pérdida
-    const response = await axios.get(`${API_BASE}/acciones/ver-ganancia/${accionId}`);
+    const response = await axios.get(`${API_BASE}/acciones/ver-ganancia/${accionId}`, { headers });
     const data = response.data;
 
     // Setear datos de ganancia/pérdida
@@ -83,7 +96,7 @@ document.getElementById("verGanancia").addEventListener("click", async () => {
 
 // Regresar a la página principal
 document.getElementById("btnRegresar").addEventListener("click", () => {
-  window.location.href = `index.html?usuarioId=${usuarioId}`;
+  window.location.href = `registroAcciones.html?usuarioId=${usuarioCedula}`;
 });
 
 // Cargar detalles de la acción al cargar la página
