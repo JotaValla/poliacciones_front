@@ -69,6 +69,7 @@
         </tbody>
       </table>
 
+      <div id="paginacion" class="paginacion-container"></div>
       <h2>Consolidado de Acciones</h2>
       <table id="tablaConsolidados">
         <thead>
@@ -86,14 +87,13 @@
         </tbody>
       </table>
 
-      <div id="paginacion" class="paginacion-container"></div>
-      <button type="button" id="cerrarSesion">Cerrar Sesión</button>
-    </div>
-    <div id="notificationModal" class="modal hidden">
-      <div class="modal-content">
-        <p id="modalMessage"></p>
-        <button id="closeModal">Aceptar</button>
-      </div>
+      <button
+        type="button"
+        id="cerrarSesion"
+        onclick="location.href='index.html'"
+      >
+        Cerrar Sesión
+      </button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="registroAcciones.js"></script>

@@ -5,7 +5,7 @@ const usuarioCedula = localStorage.getItem("usuarioCedula");
 console.log("Datos en registroAcciones:", { token, usuarioCedula }); // Para depuración
 
 if (!token) {
-  alert("Debes iniciar sesión primero.");
+  showCustomModal("Debes iniciar sesión primero.", "error");
   window.location.href = "index.html";
 }
 
@@ -42,7 +42,7 @@ document
 
 async function actualizarTabla(page = 0) {
   if (!usuarioCedula) {
-    alert("No se encuentra la información del usuario.");
+    showCustomModal("No se encuentra la información del usuario.", "error");
     window.location.href = "index.html";
     return;
   }
@@ -90,7 +90,7 @@ async function actualizarTabla(page = 0) {
     actualizarTablaConsolidados();
   } catch (error) {
     console.error("Error al cargar acciones:", error);
-    alert("Hubo un problema al cargar tus acciones.");
+    showCustomModal("Hubo un problema al cargar tus acciones.", "error");
   }
 }
 
@@ -165,10 +165,11 @@ document.getElementById("compraForm").addEventListener("submit", async (e) => {
   const diaSemana = fechaSeleccionada.getDay();
 
   if (diaSemana === 5 || diaSemana === 6) {
-    showModal(
-      "El mercado cierra los sábados y domingos. Seleccione otra fecha."
+    showCustomModal(
+      "El mercado cierra los sábados y domingos. Seleccione otra fecha.",
+      "error"
     );
-    fechaInput.value = ""; // Limpiar la fecha seleccionada
+    fechaInput.value = "";
     return;
   }
 
@@ -180,20 +181,23 @@ document.getElementById("compraForm").addEventListener("submit", async (e) => {
 
   // Validar que la cantidad sea positiva
   if (cantidad <= 0) {
-    showModal("La cantidad debe ser un número positivo.");
+    showCustomModal("La cantidad debe ser un número positivo.", "error");
     return;
   }
 
   // Validar que el precio sea mayor que 0
   if (precio <= 0) {
-    showModal("El precio debe ser mayor a 0.");
+    showCustomModal("El precio debe ser mayor a 0.", "error");
     return;
   }
 
   // Validación del símbolo de la acción (solo letras)
   const regexSimbolo = /^[A-Za-z]+$/;
   if (!regexSimbolo.test(simbolo)) {
-    showModal("El símbolo de la acción debe contener solo letras.");
+    showCustomModal(
+      "El símbolo de la acción debe contener solo letras.",
+      "error"
+    );
     return;
   }
 
@@ -212,24 +216,21 @@ document.getElementById("compraForm").addEventListener("submit", async (e) => {
     );
 
     console.log("Respuesta del registro:", response.data); // Para depuración
-    showModal("Acción registrada con éxito.");
+    showCustomModal("Acción registrada con éxito.", 'success');
 
     // Limpiamos el formulario
     document.getElementById("compraForm").reset();
 
     ordenamientoActivo = false;
-    await Promise.all([
-      actualizarTabla(0),
-      actualizarTablaConsolidados()
-    ]);
+    await Promise.all([actualizarTabla(0), actualizarTablaConsolidados()]);
   } catch (error) {
     console.error("Error completo:", error);
     console.error("Respuesta del servidor:", error.response?.data);
 
     if (error.response && error.response.data && error.response.data.message) {
-      showModal(error.response.data.message);
+      showCustomModal(error.response.data.message, 'error');
     } else {
-      showModal("Error al registrar la acción. Intenta nuevamente.");
+      showCustomModal("Error al registrar la acción. Intenta nuevamente.", 'error');
     }
   }
 });
@@ -244,6 +245,48 @@ function showModal(message) {
 
   document.getElementById("closeModal").addEventListener("click", () => {
     modal.classList.add("hidden");
+  });
+}
+
+// Función para mostrar modales personalizados
+function showCustomModal(message, type = "success") {
+  // Crear el modal
+  const modal = document.createElement("div");
+  modal.className = `custom-modal ${
+    type === "success" ? "modal-success" : "modal-error"
+  }`;
+
+  // Contenido del modal
+  modal.innerHTML = `
+    <div class="custom-modal-content">
+      <div class="modal-header">
+        <div class="modal-icon">
+          ${type === "success" ? "✓" : "✕"}
+        </div>
+      </div>
+      <div class="modal-message">${message}</div>
+      <button class="modal-button">Aceptar</button>
+    </div>
+  `;
+
+  // Agregar el modal al DOM
+  document.body.appendChild(modal);
+
+  // Mostrar el modal con animación
+  setTimeout(() => modal.classList.add("show"), 10);
+
+  // Manejar el cierre del modal
+  const closeModal = () => {
+    modal.classList.remove("show");
+    setTimeout(() => modal.remove(), 300);
+  };
+
+  // Evento para el botón de cerrar
+  modal.querySelector(".modal-button").addEventListener("click", closeModal);
+
+  // Cerrar al hacer clic fuera del modal
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
   });
 }
 
